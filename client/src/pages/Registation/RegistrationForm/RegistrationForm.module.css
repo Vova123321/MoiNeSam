@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+.main {
+    font-family: Ubuntu, serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background-image: url('../../../assets/Bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.form {
+    width: 80%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+    gap: 20px;
+    padding: 10px;
+    background-color: rgba(236, 236, 236, 0.56);
+}
+
+.form > label {
+    gap: 10px;
+    display: flex;
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.form > label > input {
+    padding: 3px;
+    width: 100%;
+    height: 50px;
+    border: 1px solid black
+}
+
+.form > p {
+    font-size: 25px;
+}
+
+.form > button {
+    font-size: 20px;
+    width: 50%;
+    border-radius: 10px;
+    height: 50px;
+    background-color: rgba(55, 255, 86, 0.89);
+    transition: transform 1s ease;
+}
+
+.form > button:hover {
+    transform: scale(0.96);
+}
