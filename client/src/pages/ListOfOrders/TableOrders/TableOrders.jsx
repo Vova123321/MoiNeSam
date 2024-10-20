@@ -36,7 +36,8 @@ const TableOrders = () => {
             date: '2024-10-12',
             time: '09:00',
             service: 'Химчистка мебели',
-            status: STATUS.delete
+            status: STATUS.delete,
+            reason: 'Причина отказа'
         }
     ];
 
@@ -52,6 +53,7 @@ const TableOrders = () => {
                     <th>Дата заявки</th>
                     <th>Время</th>
                     <th>Вид услуги</th>
+                    <th>Комментарий</th>
                     <th>Статус</th>
                 </tr>
                 </thead>
@@ -64,6 +66,11 @@ const TableOrders = () => {
                         <td data-label="Дата заявки">{order.date}</td>
                         <td data-label="Время">{order.time}</td>
                         <td data-label="Вид услуги">{order.service}</td>
+                        {order.status === STATUS.delete ? (
+                            <td data-label="Причина">{order.reason}</td>
+                        ) : (
+                            <td data-label="Комментарий">Спасибо за заказ!</td>
+                        )}
                         <td data-label="Статус" className={clsx(order.status === STATUS.success && styles['status-completed'],
                                                                 order.status === STATUS.pending && styles['status-in-progress'],
                                                                 order.status === STATUS.delete && styles['status-cancelled'])}>{order.status}</td>

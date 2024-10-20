@@ -3,12 +3,15 @@ import header from './Header.module.css'
 import logo from '../../assets/logo.png'
 import { useSelector, useDispatch} from "react-redux";
 import { logIn, logOut} from "../../store/slices/userSlice.js";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({page, src}) => {
+    const navigate = useNavigate()
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const handleClick = () => {
         dispatch(logOut())
+        navigate('/authorization')
     }
 
     return (
@@ -25,10 +28,8 @@ const Header = ({page, src}) => {
                 </div>
             )}
             {user.loggedIn ? (
-                user.name === 'admin' ? (
+                user.name === 'adminka' ? (
                     <div className={header.right}>
-                        <span>Пользователь {user.name}</span>
-                        <a href="#">Админка</a>
                     </div>
                 ) : (
                     <div className={header.right}>

@@ -11,28 +11,43 @@ import ListOfOrders from "./pages/ListOfOrders/ListOfOrders.jsx";
 import AdminPanel from "./pages/AdminPanel/AdminPanel.jsx";
 import ProtectedRoute from "./Routes/ProtectedRoute/ProtectedRoute.jsx";
 import AdminRoute from "./Routes/AdminRoute/AdminRoute.jsx";
+import { Outlet } from 'react-router-dom';
+const MainLayout = () => {
+    return (
+        <div>
+            <Outlet />
+        </div>
+    );
+};
 
+// Обновленные роуты
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <Registration />
+        element: <MainLayout />, // Главный компонент
+        children: [
+            {
+                path: '/',
+                element: <Registration />,
+            },
+            {
+                path: '/authorization',
+                element: <Authorization />,
+            },
+            {
+                path: '/create_order',
+                element: <ProtectedRoute element={<CreateOrder />} />,
+            },
+            {
+                path: '/list_of_orders',
+                element: <ProtectedRoute element={<ListOfOrders />} />,
+            },
+            {
+                path: '/admin_panel',
+                element: <AdminRoute element={<AdminPanel />} />,
+            },
+        ],
     },
-    {
-        path: '/authorization',
-        element: <Authorization />
-    },
-    {
-        path: '/create_order',
-        element: <ProtectedRoute element={<CreateOrder />} />  // Защищаем маршрут
-    },
-    {
-        path: '/list_of_orders',
-        element: <ProtectedRoute element={<ListOfOrders />} /> // Защищаем маршрут
-    },
-    {
-        path: '/admin_panel',
-        element: <AdminRoute element={<AdminPanel />} />       // Защищаем маршрут только для админа
-    }
 ]);
 
 createRoot(document.getElementById('root')).render(
