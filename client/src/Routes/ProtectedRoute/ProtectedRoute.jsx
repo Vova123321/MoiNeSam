@@ -7,6 +7,8 @@ const ProtectedRoute = ({ element }) => {
 
     if (!user.loggedIn) {
         return <Navigate to="/" />;
+
+
     }
 
     return element;

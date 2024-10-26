@@ -3,7 +3,7 @@ import header from './Header.module.css'
 import logo from '../../assets/logo.png'
 import { useSelector, useDispatch} from "react-redux";
 import { logIn, logOut} from "../../store/slices/userSlice.js";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const Header = ({page, src}) => {
     const navigate = useNavigate()
@@ -19,7 +19,7 @@ const Header = ({page, src}) => {
             {user.loggedIn ? (
                 <div className={header.left}>
                     <img src={logo} alt=""/>
-                    <span>Пользователь: {user.name}</span>
+                    <span>Пользователь: {user.user_id}</span>
                     <button className={header.exit} onClick={handleClick}>Выйти</button>
                 </div>
             ) : (
@@ -28,18 +28,18 @@ const Header = ({page, src}) => {
                 </div>
             )}
             {user.loggedIn ? (
-                user.name === 'adminka' ? (
+                user.user_id === 'adminka' ? (
                     <div className={header.right}>
                     </div>
                 ) : (
                     <div className={header.right}>
-                        <a href="/create_order">Сделать заказ</a>
-                        <a href="/list_of_orders">История заказов</a>
+                        <Link to={'/create_order'}>Сделать заказ</Link>
+                        <Link to={"/list_of_orders"}>История заказов</Link>
                     </div>
                 )
             ) : (
                 <div className={header.right}>
-                    <a href={src}>{page}</a>
+                    <Link to={src}>{page}</Link>
                 </div>
             )}
 

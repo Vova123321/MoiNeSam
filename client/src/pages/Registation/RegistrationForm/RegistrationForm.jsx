@@ -2,12 +2,12 @@ import React, {useMemo, useState} from 'react';
 import main from './RegistrationForm.module.css';
 import { useDispatch } from 'react-redux';
 import { logIn } from '../../../store/slices/userSlice.js';
-import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationForm = () => {
 
-    const dispatch = useDispatch(); // Инициализация dispatch
-    const navigate = useNavigate(); // Инициализация navigate
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -29,14 +29,14 @@ const RegistrationForm = () => {
         setError('');
         setMessage('');
 
-        // Проверка на заполненность всех полей
+
         if (Object.values(user).includes('')) {
             setError('Заполните все поля!');
             return;
         }
 
         try {
-            // Отправка POST запроса
+
             const response = await fetch('http://127.0.0.1:8000/api/register', {
                 method: 'POST',
                 headers: {
@@ -50,7 +50,7 @@ const RegistrationForm = () => {
             if (response.ok) {
                 setError('')
                 setMessage('Пользователь успешно зарегистрирован!');
-                dispatch(logIn({name: user.login}))
+                dispatch(logIn({user_id: user.login}))
 
                 if(user.login === 'adminka') {
                     navigate('/admin_panel')

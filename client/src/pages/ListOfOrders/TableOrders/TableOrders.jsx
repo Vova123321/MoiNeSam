@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './TableOrders.module.css';
 import clsx from "clsx";
+import {useSelector} from "react-redux";
 
 const STATUS = {
     success: 'Завершено',
@@ -9,37 +10,37 @@ const STATUS = {
 }
 
 const TableOrders = () => {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const userName = useSelector((state) => state.user.user_id);
 
-    const orders = [
-        {
-            id: 1,
-            address: 'ул. Ленина, 25, Москва',
-            phone: '+7(999)-123-45-67',
-            date: '2024-10-18',
-            time: '10:30',
-            service: 'Чистка ковров',
-            status: STATUS.pending
-        },
-        {
-            id: 2,
-            address: 'ул. Пушкина, 10, Санкт-Петербург',
-            phone: '+7(912)-456-78-90',
-            date: '2024-10-15',
-            time: '12:00',
-            service: 'Мойка окон',
-            status: STATUS.success
-        },
-        {
-            id: 3,
-            address: 'проспект Мира, 50, Казань',
-            phone: '+7(915)-987-65-43',
-            date: '2024-10-12',
-            time: '09:00',
-            service: 'Химчистка мебели',
-            status: STATUS.delete,
-            reason: 'Причина отказа'
-        }
-    ];
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/orders?user_id=${userName}`);
+                if (!response.ok) {
+                    throw new Error('Сетевая ошибка, попробуйте снова');
+                }
+                const data = await response.json();
+                setOrders(data.orders);
+                setLoading(false);
+            } catch (err) {
+                setError(err);
+                setLoading(false);
+            }
+        };
+
+        fetchOrders();
+    }, [userName]);
+
+    if (loading) {
+        return <div>Загрузка...</div>;
+    }
+
+    if (error) {
+        return <div>Ошибка при загрузке заказов: {error.message}</div>;
+    }
 
     return (
         <div className={styles.orderTableContainer}>
@@ -72,8 +73,8 @@ const TableOrders = () => {
                             <td data-label="Комментарий">Спасибо за заказ!</td>
                         )}
                         <td data-label="Статус" className={clsx(order.status === STATUS.success && styles['status-completed'],
-                                                                order.status === STATUS.pending && styles['status-in-progress'],
-                                                                order.status === STATUS.delete && styles['status-cancelled'])}>{order.status}</td>
+                            order.status === STATUS.pending && styles['status-in-progress'],
+                            order.status === STATUS.delete && styles['status-cancelled'])}>{order.status}</td>
                     </tr>
                 ))}
                 </tbody>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './CreateOrderForm.module.css';
 
 const CreateOrderForm = () => {
+    const userName = useSelector((state) => state.user.user_id);
     const [formData, setFormData] = useState({
         address: '',
         phone: '',
@@ -24,11 +26,38 @@ const CreateOrderForm = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
-        alert("Форма успешно отправлена!");
+
+
+        const filteredFormData = Object.fromEntries(
+            Object.entries(formData).filter(([_, value]) => value !== undefined && value !== "")
+        );
+
+        const dataToSend = { ...filteredFormData, user_id: userName };
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataToSend),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to send the form data");
+            }
+
+            const data = await response.json();
+            console.log("Server Response:", data);
+            alert("Форма успешно отправлена!");
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Произошла ошибка при отправке формы.");
+        }
     };
+
 
     return (
         <div className={styles.formContainer}>
@@ -95,7 +124,6 @@ const CreateOrderForm = () => {
                         ))}
                     </select>
                 </div>
-
 
                 {formData.service === 'Иная услуга' && (
                     <div className={styles.formGroup}>

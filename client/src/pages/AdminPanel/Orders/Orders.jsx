@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import styles from './Orders.module.css'
+import React, { useEffect, useState } from 'react';
+import styles from './Orders.module.css';
 import clsx from 'clsx';
-const Orders = () => {
 
+const Orders = () => {
     const STATUS = {
         new: 'Новый',
         success: 'Завершено',
@@ -10,64 +10,72 @@ const Orders = () => {
         delete: 'Отменено',
     };
 
-    const [orders, setOrders] = useState([
-        {
-            id: 1,
-            customerName: 'Иван Иванов',
-            address: 'ул. Ленина, 25, Москва',
-            phone: '+7(999)-123-45-67',
-            date: '2024-10-18',
-            time: '10:30',
-            service: 'Чистка ковров',
-            status: STATUS.new,
-        },
-        {
-            id: 2,
-            customerName: 'Петр Петров',
-            address: 'ул. Пушкина, 10, Санкт-Петербург',
-            phone: '+7(912)-456-78-90',
-            date: '2024-10-15',
-            time: '12:00',
-            service: 'Мойка окон',
-            status: STATUS.success,
-        },
-        {
-            id: 3,
-            customerName: 'Андрей Андреев',
-            address: 'проспект Мира, 50, Казань',
-            phone: '+7(915)-987-65-43',
-            date: '2024-10-12',
-            time: '09:00',
-            service: 'Химчистка мебели',
-            status: STATUS.pending,
-        },
-    ]);
-
+    const [orders, setOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [currentOrder, setCurrentOrder] = useState(null);
     const [cancelComment, setCancelComment] = useState('');
 
-    const handleStatusChange = (orderId, newStatus) => {
-        const updatedOrders = orders.map(order =>
-            order.id === orderId ? { ...order, status: newStatus } : order
-        );
-        setOrders(updatedOrders);
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/orders/all');
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки заказов');
+                }
+                const data = await response.json();
+                setOrders(data.orders);
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        };
 
+        fetchOrders();
+    }, []);
+
+    const handleStatusChange = async (orderId, newStatus) => {
         if (newStatus === STATUS.delete) {
             setCurrentOrder(orderId);
             setShowModal(true);
+        } else {
+            await updateOrderStatus(orderId, newStatus);
         }
     };
 
-    const handleSaveCancelComment = () => {
+    const updateOrderStatus = async (orderId, newStatus) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: newStatus,
+                    reason: newStatus === STATUS.delete ? cancelComment : undefined,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка обновления статуса заказа');
+            }
+
+            const updatedOrder = await response.json();
+            setOrders(orders.map(order => (order.id === orderId ? updatedOrder.order : order)));
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    };
+
+    const handleSaveCancelComment = async () => {
+        await updateOrderStatus(currentOrder, STATUS.delete);
+
         const updatedOrders = orders.map(order =>
             order.id === currentOrder ? { ...order, reason: cancelComment } : order
         );
+
         setOrders(updatedOrders);
         setShowModal(false);
         setCancelComment('');
     };
-
 
     return (
         <div className={styles.orderTableContainer}>
@@ -98,8 +106,7 @@ const Orders = () => {
                         <td data-label="Статус">
                             <select
                                 value={order.status}
-                                onChange={e => handleStatusChange(order.id, e.target.value)}
-                            >
+                                onChange={e => handleStatusChange(order.id, e.target.value)}>
                                 <option value={STATUS.new}>{STATUS.new}</option>
                                 <option value={STATUS.pending}>{STATUS.pending}</option>
                                 <option value={STATUS.success}>{STATUS.success}</option>
@@ -111,7 +118,6 @@ const Orders = () => {
                 </tbody>
             </table>
 
-            {/* Модальное окно для ввода комментария при отмене заказа */}
             {showModal && (
                 <div className={styles.modal}>
                     <div className={styles.modalContent}>

@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 const AdminRoute = ({ element }) => {
     const user = useSelector((state) => state.user);
 
-    if (!user.loggedIn && user.name !== 'admin') {
+    if (!user.loggedIn && user.name !== 'adminka') {
         return <Navigate to="/" />;
     }
 
